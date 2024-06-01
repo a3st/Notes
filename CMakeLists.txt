@@ -4,10 +4,21 @@ project(Notes VERSION 1.0.0)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+if (NOT TARGET simdjson)
 add_subdirectory(thirdparty/simdjson)
+endif()
+
+if (NOT TARGET libwebview_edge_static)
 add_subdirectory(thirdparty/libwebview)
+endif()
+
+if (NOT TARGET SQLiteCpp)
 add_subdirectory(thirdparty/SQLiteCpp)
+endif()
+
+if (NOT TARGET base64pp)
 add_subdirectory(thirdparty/base64pp)
+endif()
 
 add_executable(Notes
     src/main.cpp
