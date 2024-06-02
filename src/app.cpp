@@ -13,24 +13,22 @@ namespace notes
             throw std::runtime_error("An error occurred when adding a new table to the database");
         }
 
-        app.bind("getNotesFromDB", [&](libwebview::EventArgs const& args) {
+        app.bind<uint32_t, std::string, uint32_t>("test", [&](libwebview::EventArgs const& e, int32_t a1, std::string a2, uint32_t a3) {
+            std::cout << a2 << std::endl;
+        });
+
+        /*app.bind("getNotesFromDB", [&](libwebview::EventArgs const& args) {
             if(this->loadNotesFromDB()) {
 
                 
             }
-        });
+        });*/
     }
 
     int32_t App::run(int32_t const argc, char** argv)
     {
-        if (app.run("resources/index.html"))
-        {
-            return EXIT_SUCCESS;
-        }
-        else
-        {
-            return EXIT_FAILURE;
-        }
+        app.run("resources/index.html");
+        return EXIT_SUCCESS;
     }
 
     bool App::loadNotesFromDB()

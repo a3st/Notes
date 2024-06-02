@@ -2,7 +2,7 @@
     <div class="wrapper-container">
         <editor></editor>
 
-        <div v-if="isLoading" class="notegr-container">
+        <div v-if="isReady" class="notegr-container">
             <note title="Заметка 1"></note>
             <note title="Заметка 2"></note>
             <note title="Заметка 3"></note>
@@ -31,7 +31,7 @@ export default {
     },
     data() {
         return {
-            isLoading: true
+            isReady: true
         }
     },
     created() {
@@ -43,7 +43,7 @@ export default {
         $(window).off('resize');
     },
     mounted() {
-        
+        webview.invoke('test', 1, "test", 3);
     },
     methods: {
         updateNoteGroupHeight(windowHeight) {

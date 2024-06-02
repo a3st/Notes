@@ -1,7 +1,7 @@
 #pragma once
 
 #include "note.hpp"
-#include "webview.hpp"
+#include <webview.hpp>
 #include <SQLiteCpp/SQLiteCpp.h>
 
 namespace notes
