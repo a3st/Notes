@@ -30,7 +30,13 @@ namespace notes
 
     void ViewModel::exportNote(uint32_t ID, std::string format)
     {
-        auto result = app->showSaveDialog(std::filesystem::current_path(), "");
+        std::string filter;
+        if (format.compare("txt") == 0)
+        {
+            filter = "Text files (*.txt)|*.txt";
+        }
+
+        auto result = app->showSaveDialog(std::filesystem::current_path(), filter);
         if (result.has_value())
         {
             if (!noteStorage.exportNoteAsFile(ID, format, result.value()))
