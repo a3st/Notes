@@ -1,5 +1,5 @@
 <template>
-    <div class="note-container">
+    <div class="note-container" @mousedown="$emit('click', $event)">
         <div class="note-header-container">
             <span class="note-title">{{ title }}</span>
 
@@ -21,6 +21,7 @@
 
 <script>
 export default {
+    emits: ['click'],
     props: {
         title: String,
         data: String

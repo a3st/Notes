@@ -2,30 +2,17 @@
 
 namespace notes
 {
-    class Note
+    struct Note
     {
-      public:
-        Note(const std::string_view noteName, const std::string_view noteData);
+        Note(uint32_t const noteID, std::string_view const noteName, std::string_view const noteData);
 
         /*!
           @brief Present note in JSON format
           @return JSON formatted string
         */
-        std::string dump();
+        std::string dump() const;
 
-        /*!
-          @brief Get note name
-          @return Note name
-        */
-        std::string_view getName() const;
-
-        /*!
-          @brief Get note data in base64 format
-          @return Base64 formatted string
-        */
-        std::string_view getData() const;
-
-      private:
+        uint32_t noteID;
         std::string noteName;
         std::string noteData;
     };

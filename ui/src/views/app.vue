@@ -1,14 +1,9 @@
 <template>
     <div class="wrapper-container">
-        <editor></editor>
+        <editor ref="editor" @save="onEditorSaveClick($event)"></editor>
 
         <div v-if="isReady" class="notegr-container">
-            <note title="Заметка 1"></note>
-            <note title="Заметка 2"></note>
-            <note title="Заметка 3"></note>
-            <note title="Заметка 4"></note>
-            <note title="Заметка 5"></note>
-            <note title="Заметка 6"></note>
+            <note v-for="(note, index) in notes" v-bind:title="note.title" v-bind:data="note.content" @click="onNoteClick($event, index)"></note>
         </div>
 
         <div v-else class="notegr-loading-container">
@@ -31,23 +26,63 @@ export default {
     },
     data() {
         return {
-            isReady: true
+            isReady: true,
+            notes: []
         }
     },
     created() {
         $(window).on('resize', e => {
             this.updateNoteGroupHeight(e.target.outerHeight);
+            console.log(e.target.outerHeight);
         });
     },
     destroyed() {
         $(window).off('resize');
     },
     mounted() {
-        webview.invoke('test', 1, "test", 3);
+        this.updateNoteList();
     },
     methods: {
         updateNoteGroupHeight(windowHeight) {
             $('.notegr-container').css('height', windowHeight - ($('.editor-container').height() + 80));
+        },
+        updateNoteList() {
+            this.isReady = false;
+
+            this.notes.splice(0, this.notes.length);
+
+            webview.invoke('getNotes').then(data => {
+                for(const note of Object.values(data.notes)) {
+                    const noteData = {
+                        'id': note.id,
+                        'title': note.name,
+                        'description': "",
+                        'content': decodeURIComponent(escape(atob(note.data)))
+                    };
+                    this.notes.push(noteData);
+                }
+                this.isReady = true;
+                this.$nextTick(() => { this.updateNoteGroupHeight($(window).outerHeight()); });
+            });
+        },
+        onNoteClick(e, index) {
+            const editor = this.$refs.editor;
+
+            if(editor.isOpen()) {
+                return;
+            }
+
+            editor.open(true);
+            
+            editor.setID(this.notes[index].id);
+            editor.setTitle(this.notes[index].title);
+            editor.setContent(this.notes[index].content);
+        },
+        onEditorSaveClick(e) {
+            this.isReady = false;
+
+            webview.invoke('saveNote', e.id, e.title, btoa(unescape(encodeURIComponent(e.content))))
+                .then(() => { this.updateNoteList(); });
         }
     }
 }
@@ -96,7 +131,7 @@ export default {
     gap: 20px; 
     padding: 10px; 
     margin-top: 10px; 
-    overflow-y: scroll;
+    overflow-y: auto;
     overflow-x: hidden;
 }
 
@@ -164,5 +199,9 @@ input {
     border: none;
     font-size: 18px;
     width: 100%;
+}
+
+span, div {
+    user-select: none;
 }
 </style>

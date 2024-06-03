@@ -3,25 +3,16 @@
 
 namespace notes
 {
-    Note::Note(const std::string_view noteName, const std::string_view noteData)
-        : noteName(noteName), noteData(noteData)
+    Note::Note(uint32_t const noteID, std::string_view const noteName, std::string_view const noteData)
+        : noteID(noteID), noteName(noteName), noteData(noteData)
     {
     }
 
-    std::string Note::dump()
+    std::string Note::dump() const
     {
         std::stringstream stream;
-        stream << "{\"name\":\"" << noteName << "\",data:\"" << noteData << "\"}";
+        stream << "{\"id\":" << std::to_string(noteID) << ",\"name\":\"" << noteName << "\",data:\"" << noteData
+               << "\"}";
         return stream.str();
-    }
-
-    std::string_view Note::getName() const
-    {
-        return noteName;
-    }
-
-    std::string_view Note::getData() const
-    {
-        return noteData;
     }
 } // namespace notes

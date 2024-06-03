@@ -22,7 +22,8 @@ endif()
 
 add_executable(Notes
     src/main.cpp
-    src/app.cpp
+    src/view_model.cpp
+    src/note_storage.cpp
     src/note.cpp)
 
 target_include_directories(Notes PRIVATE 

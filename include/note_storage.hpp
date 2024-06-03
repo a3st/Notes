@@ -1,24 +1,24 @@
 #pragma once
 
 #include "note.hpp"
-#include <webview.hpp>
 #include <SQLiteCpp/SQLiteCpp.h>
 
 namespace notes
 {
-    class App
+    class NoteStorage
     {
       public:
-        App();
+        NoteStorage();
 
-        int32_t run(int32_t const argc, char** argv);
+        std::string getNotesData() const;
+
+        void saveNoteToDB(Note const& note);
 
       private:
-        libwebview::App app;
         SQLite::Database database;
-        std::vector<std::unique_ptr<Note>> notes;
+        std::vector<Note> notes;
 
-        bool loadNotesFromDB();
+        void loadNotesFromDB();
         bool tryCreateNotesDB();
     };
 } // namespace notes

@@ -1,16 +1,21 @@
 <template>
     <div class="editor-container">
         <div class="header-input-container">
-            <input type="text" placeholder="Придумайте о чем написать..." @focus="onFocusInput($event)" />
+            <input type="text" placeholder="Придумайте что написать..." v-model="title" @focus="onFocusInput($event)" />
         </div>
 
-        <div v-if="isOpenEditor" class="body-input-container">
-            <textarea style="padding: 10px;" placeholder="Заметка..."></textarea>
+        <div v-show="isOpenEditor" class="body-input-container">
+            <div v-if="isPreview" style="display: flex; padding: 10px; height: calc(100% - 80px);">
+                <div class="markdown-container" v-html="previewText" @mousedown="onSwitchVisibleEditorClick($event)"></div>
+            </div>
+            <div v-else style="display: flex; padding: 10px; height: calc(100% - 80px);">
+                <textarea placeholder="Заметка..." v-model="content"></textarea>
+            </div>
 
             <div class="footer-input-container">
                 <div style="display: flex; flex-direction: row; align-items: center; width: 100%;">
                     <div style="display: flex; flex-direction: row; gap: 10px;">
-                        <button title="Предпросмотр" class="btn-icon circle" style="width: 36px; height: 36px;">
+                        <button title="Предпросмотр" class="btn-icon circle" style="width: 36px; height: 36px;" @click="onSwitchVisibleClick($event)">
                             <object style="pointer-events: none;" data="images/eye.svg" width="20" height="20"></object>
                         </button>
 
@@ -33,7 +38,7 @@
                         </div>
                     </div>
                     <div style="display: flex; flex-direction: row; margin-left: auto;">
-                        <button class="btn-text" @click="" style="font-weight: bold;">Сохранить</button>
+                        <button class="btn-text" @click="onSaveClick($event)" style="font-weight: bold;">Сохранить</button>
                         <button class="btn-text" @click="onCloseClick($event)" style="font-weight: bold;">Закрыть</button>
                     </div>
                 </div>
@@ -43,37 +48,75 @@
 </template>
 
 <script>
-import { toRaw } from 'vue';
+import { marked } from 'marked';
 import $ from 'jquery';
 
 export default {
+    emits: ['save'],
     data() {
         return {
             isOpenEditor: false,
-            isOpenExport: false
+            isOpenExport: false,
+            isPreview: false,
+            content: "",
+            title: "",
+            id: -1
         }
     },
-    mounted() {
-        $(document).bind('click', e => {
-            if($(e.target).closest('.editor-container').length == 0) {
-                $('.header-input-container input').attr('placeholder', 'Придумайте о чем написать...');
-                this.isOpenEditor = false;
-                this.isOpenExport = false;
-            }
-        });
+    computed: {
+        previewText() {
+            return marked(this.content);
+        }
     },
     methods: {
         onFocusInput(e) {
             $('.header-input-container input').attr('placeholder', 'Заголовок');
+
             this.isOpenEditor = true;
         },
         onCloseClick(e) {
-            $('.header-input-container input').attr('placeholder', 'Придумайте о чем написать...');
+            $('.header-input-container input')
+                .attr('placeholder', 'Придумайте что написать...')
+            
+            this.title = "";
+            this.content = "";
             this.isOpenEditor = false;
             this.isOpenExport = false;
+            this.isPreview = false;
+            this.id = -1;
+        },
+        onSaveClick(e) {
+            this.$emit('save', { 'id': this.id, 'title': this.title, 'content': this.content });
+            this.onCloseClick();
         },
         onExportClick(e) {
             this.isOpenExport = !this.isOpenExport;
+        },
+        open(preview) {
+            this.isOpenEditor = true;
+            this.isPreview = preview;
+        },
+        isOpen() {
+            return this.isOpenEditor;
+        },
+        setID(id) {
+            this.id = id;
+        },
+        setTitle(title) {
+            this.title = title;
+        },
+        setContent(content) {
+            this.content = content;
+        },
+        onSwitchVisibleClick(e) {
+            this.isPreview = !this.isPreview;
+        },
+        onSwitchVisibleEditorClick(e) {
+            const containerElement = $('.markdown-container');
+            if(e.offsetX >= containerElement.width() - 15 || e.offsetY >= containerElement.height() - 15) {
+                return;
+            }
+            this.isPreview = false;
         }
     }
 }
@@ -107,5 +150,15 @@ export default {
     display: flex;
     flex-direction: column;
     height: 400px;
+}
+
+.markdown-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    cursor: text;
+    overflow-y: auto;
+    overflow-x: auto;
 }
 </style>
