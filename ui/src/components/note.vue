@@ -1,25 +1,27 @@
 <template>
     <div class="note-container">
         <div class="note-header-container">
-            <span class="note-title" @mousedown="$emit('click', $event)">{{ title }}</span>
+            <span class="note-title" @mousedown="$emit('note-click', $event)">{{ title }}</span>
 
             <div style="display: flex; flex-direction: row; margin-left: auto;">
-                <button class="btn-icon" @click="onContextClick($event)">
+                <button class="btn-icon" @click="onMenuClick($event)">
                     <object style="pointer-events: none;" data="images/ellipsis.svg" width="16" height="16"></object>
                 </button>
             </div>
         </div>
 
-        <div class="note-body-container" v-html="description" @mousedown="$emit('click', $event)"></div>
+        <div class="note-body-container" v-html="description" @mousedown="$emit('note-click', $event)"></div>
     </div>
 </template>
 
 <script>
-import {marked} from 'marked'
+import {marked} from 'marked';
+import { ctxmenu } from 'ctxmenu';
 
 export default {
-    emits: ['click', 'context'],
+    emits: ['note-click', 'menu-click'],
     props: {
+        id: Number,
         title: String,
         data: String
     },
@@ -29,9 +31,12 @@ export default {
         }
     },
     methods: {
-        onContextClick(e) {
-            this.$emit('context', e);
-        }
+        onMenuClick(e) {
+            e.stopPropagation();
+            ctxmenu.show([
+                { text: "Удалить", action: () => {
+                    webview.invoke('removeNote', this.id).then(() => this.$emit('menu-click', e)); } }], e.target);
+        },
     }
 }
 </script>

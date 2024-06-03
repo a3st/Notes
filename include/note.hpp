@@ -4,6 +4,8 @@ namespace notes
 {
     struct Note
     {
+        Note() = default;
+
         Note(uint32_t const noteID, std::string_view const noteName, std::string_view const noteData);
 
         /*!

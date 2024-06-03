@@ -12,9 +12,11 @@ namespace notes
 
         std::string getNotes();
 
-        void saveNote(uint32_t ID, std::string noteName, std::string noteData);
+        int32_t saveNote(uint32_t ID, std::string noteName, std::string noteData);
 
         void removeNote(uint32_t ID);
+
+        void exportNote(uint32_t ID, std::string format);
 
       private:
         libwebview::App* app;

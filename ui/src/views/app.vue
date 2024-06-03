@@ -4,7 +4,12 @@
 
         <div v-if="isReady" class="notegr-container">
             <note v-for="(note, index) in notes" 
-                v-bind:title="note.title" v-bind:data="note.content" @click="onNoteClick($event, index)" @context="onNoteContextClick($event, index)"></note>
+                v-bind:id="note.id" 
+                v-bind:title="note.title" 
+                v-bind:data="note.content" 
+                @note-click="onNoteClick($event, index)" 
+                @menu-click="onNoteMenuClick($event)">
+            </note>
         </div>
 
         <div v-else class="notegr-loading-container">
@@ -16,7 +21,6 @@
 
 <script>
 import $ from 'jquery';
-import { ctxmenu } from 'ctxmenu';
 
 import NoteComponent from '../components/note.vue';
 import EditorComponent from '../components/editor.vue';
@@ -40,6 +44,7 @@ export default {
     },
     mounted() {
         this.updateNoteList();
+        this.$nextTick(() => { this.updateNoteGroupHeight($(window).outerHeight()); });
     },
     methods: {
         updateNoteGroupHeight(windowHeight) {
@@ -60,7 +65,6 @@ export default {
                     this.notes.push(noteData);
                 }
                 this.isReady = true;
-                this.$nextTick(() => { this.updateNoteGroupHeight($(window).outerHeight()); });
             });
         },
         onNoteClick(e, index) {
@@ -76,17 +80,11 @@ export default {
             editor.setTitle(this.notes[index].title);
             editor.setContent(this.notes[index].content);
         },
-        onNoteContextClick(e, index) {
-            e.stopPropagation();
-            ctxmenu.show([
-                { text: "Удалить", action: () => {
-                    webview.invoke('removeNote', this.notes[index].id).then(() => { this.updateNoteList(); }); } }], e.target);
+        onNoteMenuClick(e) {
+            this.updateNoteList();
         },
         onEditorSaveClick(e) {
-            this.isReady = false;
-
-            webview.invoke('saveNote', e.id, e.title, btoa(unescape(encodeURIComponent(e.content))))
-                .then(() => { this.updateNoteList(); });
+            this.updateNoteList();
         }
     }
 }

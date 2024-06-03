@@ -12,9 +12,11 @@ namespace notes
 
         std::string getNotesData() const;
 
-        void saveNoteToDB(Note const& note);
+        int32_t saveNoteToDB(Note const& note);
 
         void removeNoteFromDB(uint32_t const ID);
+
+        bool exportNoteAsFile(uint32_t const ID, std::string_view const format, std::filesystem::path const& filePath);
 
       private:
         SQLite::Database database;

@@ -21,10 +21,22 @@ add_subdirectory(thirdparty/base64pp)
 endif()
 
 add_executable(Notes
+    src/exporters/txt.cpp
     src/main.cpp
     src/view_model.cpp
     src/note_storage.cpp
-    src/note.cpp)
+    src/note.cpp
+    app.rc)
+
+if(WIN32)
+set_target_properties(Notes
+    PROPERTIES
+        LINK_FLAGS_DEBUG "/SUBSYSTEM:CONSOLE"
+        LINK_FLAGS_RELEASE "/SUBSYSTEM:windows /ENTRY:mainCRTStartup"
+        LINK_FLAGS_RELWITHDEBINFO "/SUBSYSTEM:windows /ENTRY:mainCRTStartup"
+        LINK_FLAGS_MINSIZEREL "/SUBSYSTEM:windows /ENTRY:mainCRTStartup"
+    )
+endif()
 
 target_include_directories(Notes PRIVATE 
     ${PROJECT_SOURCE_DIR}/src

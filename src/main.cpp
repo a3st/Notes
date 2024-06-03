@@ -16,7 +16,7 @@ int32_t main(int32_t argc, char** argv)
     }
     catch (std::exception e)
     {
-        std::cerr << e.what() << std::endl;
+        libwebview::showMessageDialog("Notes", e.what(), libwebview::MessageDialogType::Error);
         return EXIT_FAILURE;
     }
 }

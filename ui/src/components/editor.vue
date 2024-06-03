@@ -19,12 +19,12 @@
                             <object style="pointer-events: none;" data="images/eye.svg" width="20" height="20"></object>
                         </button>
 
-                        <button id="export-btn" title="Экспорт" class="btn-icon circle" style="width: 36px; height: 36px;" @click="onExportClick($event)">
+                        <button v-show="this.id != -1" id="export-btn" title="Экспорт" class="btn-icon circle" style="width: 36px; height: 36px;" @click="onExportClick($event)">
                             <object style="pointer-events: none;" data="images/file-export.svg" width="20" height="20"></object>
                         </button>
                     </div>
                     <div style="display: flex; flex-direction: row; margin-left: auto;">
-                        <button v-show="this.title.length > 0" class="btn-text" @click="onSaveClick($event)" style="font-weight: bold;">Сохранить</button>
+                        <button class="btn-text" @click="onSaveClick($event)" style="font-weight: bold;" v-bind:disabled="!isChanged || this.title.length == 0">Сохранить</button>
                         <button class="btn-text" @click="onCloseClick($event)" style="font-weight: bold;">Закрыть</button>
                     </div>
                 </div>
@@ -44,6 +44,7 @@ export default {
         return {
             isOpenEditor: false,
             isPreview: false,
+            isChanged: false,
             content: "",
             title: "",
             id: -1
@@ -54,8 +55,17 @@ export default {
             return marked(this.content);
         }
     },
-    mounted() {
-        
+    watch: {
+        content: {
+            handler(value, oldValue) {
+                this.isChanged = true;
+            }
+        },
+        title: {
+            handler(value, oldValue) {
+                this.isChanged = true;
+            }
+        }
     },
     methods: {
         onFocusInput(e) {
@@ -74,16 +84,16 @@ export default {
             this.id = -1;
         },
         onSaveClick(e) {
-            this.$emit('save', { 'id': this.id, 'title': this.title, 'content': this.content });
-            this.onCloseClick();
+            webview.invoke('saveNote', this.id, this.title, btoa(unescape(encodeURIComponent(this.content)))).then(
+                id => this.id = id);
+            this.$emit('save', e);
+            this.isChanged = false;
         },
         onExportClick(e) {
             e.stopPropagation();
             ctxmenu.show([
                 { text: "Экспорт" }, 
-                { text: ".TXT", action: () => alert("Hello World!") }, 
-                { text: ".PDF", action: () => alert("Hello World!") },
-                { text: ".DOCX", action: () => alert("Hello World!") },
+                { text: ".TXT", action: () => webview.invoke('exportNote', this.id, 'txt') }
             ], e.target);
         },
         open(preview) {
@@ -98,9 +108,11 @@ export default {
         },
         setTitle(title) {
             this.title = title;
+            this.isChanged = false;
         },
         setContent(content) {
             this.content = content;
+            this.isChanged = false;
         },
         onSwitchVisibleClick(e) {
             this.isPreview = !this.isPreview;

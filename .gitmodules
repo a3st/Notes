@@ -10,6 +10,3 @@
 [submodule "thirdparty/libwebview"]
 	path = thirdparty/libwebview
 	url = https://github.com/a3st/libwebview
-[submodule "thirdparty/cppcoro"]
-	path = thirdparty/cppcoro
-	url = https://github.com/lewissbaker/cppcoro

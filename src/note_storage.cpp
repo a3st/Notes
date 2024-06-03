@@ -1,5 +1,8 @@
 #include "note_storage.hpp"
 #include "precompiled.hpp"
+#include <base64pp/base64pp.h>
+
+#include "exporters/txt.hpp"
 
 namespace notes
 {
@@ -55,7 +58,7 @@ namespace notes
         return true;
     }
 
-    void NoteStorage::saveNoteToDB(Note const& note)
+    int32_t NoteStorage::saveNoteToDB(Note const& note)
     {
         std::string const dbCheckNoteSQL = std::format("SELECT count(*) FROM `notes` WHERE `id`={}", note.noteID);
 
@@ -65,11 +68,7 @@ namespace notes
             std::string const dbAddNoteSQL = std::format(
                 "INSERT INTO `notes` (`name`, `data`) VALUES ('{}', '{}') RETURNING id", note.noteName, note.noteData);
 
-            int32_t const result = database.tryExec(dbAddNoteSQL);
-            if (result != SQLite::OK)
-            {
-                throw std::runtime_error("An error occurred when adding a row to the database");
-            }
+            return database.execAndGet(dbAddNoteSQL).getInt();
         }
         else
         {
@@ -81,6 +80,8 @@ namespace notes
             {
                 throw std::runtime_error("An error occurred when updating a row to the database");
             }
+
+            return note.noteID;
         }
     }
 
@@ -99,7 +100,7 @@ namespace notes
     {
         std::stringstream stream;
         stream << "{\"notes\":[";
-        
+
         bool isFirst = true;
         for (auto const& note : this->loadNotesFromDB())
         {
@@ -112,5 +113,49 @@ namespace notes
         }
         stream << "]}";
         return stream.str();
+    }
+
+    bool NoteStorage::exportNoteAsFile(uint32_t const ID, std::string_view const format,
+                                       std::filesystem::path const& filePath)
+    {
+        std::string const dbSelectSQL = std::format("SELECT `name`, `data` FROM `notes` WHERE `id`={}", ID);
+
+        SQLite::Statement query(database, dbSelectSQL);
+
+        Note note;
+        if (query.executeStep())
+        {
+            std::string const noteName = query.getColumn(0).getString();
+            std::string const noteData = query.getColumn(1).getString();
+
+            note.noteID = ID;
+            note.noteName = noteName;
+            note.noteData = noteData;
+        }
+
+        if (query.hasRow())
+        {
+            std::unique_ptr<Exporter> exporter;
+
+            std::string text;
+
+            auto result = base64pp::decode(note.noteData);
+            if (!result.has_value())
+            {
+                text = "";
+            }
+            else
+            {
+                auto decodedData = result.value();
+                text = std::string(reinterpret_cast<char const*>(decodedData.data()), decodedData.size());
+            }
+
+            if (format.compare("txt") == 0)
+            {
+                exporter = std::make_unique<exporters::TxtExport>(text);
+            }
+
+            return exporter->saveFileAs(filePath);
+        }
     }
 } // namespace notes
