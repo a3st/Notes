@@ -1,39 +1,36 @@
 <template>
-    <div class="note-container" @mousedown="$emit('click', $event)">
+    <div class="note-container">
         <div class="note-header-container">
-            <span class="note-title">{{ title }}</span>
+            <span class="note-title" @mousedown="$emit('click', $event)">{{ title }}</span>
 
             <div style="display: flex; flex-direction: row; margin-left: auto;">
-                <div v-if="isOpenExt" class="expand-inline-menu" style="background-color: rgb(227, 221, 192);">
-                    <button title="Удалить" class="btn-icon circle" style="width: 22px; height: 22px;" @click="">
-                        <object style="pointer-events: none;" data="images/trash.svg" width="10" height="10"></object>
-                    </button>
-                </div>
-                <button class="btn-icon" @click="onOpenExtClick($event)">
+                <button class="btn-icon" @click="onContextClick($event)">
                     <object style="pointer-events: none;" data="images/ellipsis.svg" width="16" height="16"></object>
                 </button>
             </div>
         </div>
 
-        <div class="note-body-container">1</div>
+        <div class="note-body-container" v-html="description" @mousedown="$emit('click', $event)"></div>
     </div>
 </template>
 
 <script>
+import {marked} from 'marked'
+
 export default {
-    emits: ['click'],
+    emits: ['click', 'context'],
     props: {
         title: String,
         data: String
     },
-    data() {
-        return {
-            isOpenExt: false
+    computed: {
+        description() {
+            return marked(this.data);
         }
     },
     methods: {
-        onOpenExtClick(e) {
-            this.isOpenExt = !this.isOpenExt;
+        onContextClick(e) {
+            this.$emit('context', e);
         }
     }
 }
@@ -83,6 +80,64 @@ export default {
 
 .note-body-container {
     display: flex;
+    flex-direction: column;
     padding: 5px;
+    margin: 5px;
+    overflow: hidden;
+}
+
+.note-body-container h1 {
+    font-size: 16px;
+    margin: 2px 0px 0px 0px;
+    font-weight: normal;
+}
+
+.note-body-container h2 {
+    font-size: 14px;
+    margin: 2px 0px 0px 0px;
+    font-weight: normal;
+}
+
+.note-body-container h3 {
+    font-size: 12px;
+    margin: 2px 0px 0px 0px;
+    font-weight: normal;
+}
+
+.note-body-container h4 {
+    font-size: 10px;
+    margin: 2px 0px 0px 0px;
+    font-weight: normal;
+}
+
+.note-body-container h5 {
+    font-size: 8px;
+    margin: 2px 0px 0px 0px;
+    font-weight: normal;
+}
+
+.note-body-container h6 {
+    font-size: 6px;
+    margin: 2px 0px 0px 0px;
+    font-weight: normal;
+}
+
+.note-body-container p {
+    font-size: 12px;
+    margin: 1px 0px 0px 0px;
+    font-weight: normal;
+}
+
+.note-body-container ol, ul {
+    margin: 1px 0px 0px 0px;
+}
+
+.note-body-container li {
+    font-size: 10px;
+}
+
+.note-body-container img {
+    width: 50%;
+    height: auto;
 }
 </style>

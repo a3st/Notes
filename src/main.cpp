@@ -7,6 +7,7 @@ int32_t main(int32_t argc, char** argv)
     try
     {
         libwebview::App app("notes-app", "Notes", 580, 600, true, true);
+        app.setMinWindowSize(580, 600);
 
         notes::ViewModel viewModel(&app);
 

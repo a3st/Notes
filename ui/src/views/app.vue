@@ -3,7 +3,8 @@
         <editor ref="editor" @save="onEditorSaveClick($event)"></editor>
 
         <div v-if="isReady" class="notegr-container">
-            <note v-for="(note, index) in notes" v-bind:title="note.title" v-bind:data="note.content" @click="onNoteClick($event, index)"></note>
+            <note v-for="(note, index) in notes" 
+                v-bind:title="note.title" v-bind:data="note.content" @click="onNoteClick($event, index)" @context="onNoteContextClick($event, index)"></note>
         </div>
 
         <div v-else class="notegr-loading-container">
@@ -15,6 +16,7 @@
 
 <script>
 import $ from 'jquery';
+import { ctxmenu } from 'ctxmenu';
 
 import NoteComponent from '../components/note.vue';
 import EditorComponent from '../components/editor.vue';
@@ -31,10 +33,7 @@ export default {
         }
     },
     created() {
-        $(window).on('resize', e => {
-            this.updateNoteGroupHeight(e.target.outerHeight);
-            console.log(e.target.outerHeight);
-        });
+        $(window).on('resize', e => { this.updateNoteGroupHeight(e.target.outerHeight); });
     },
     destroyed() {
         $(window).off('resize');
@@ -56,7 +55,6 @@ export default {
                     const noteData = {
                         'id': note.id,
                         'title': note.name,
-                        'description': "",
                         'content': decodeURIComponent(escape(atob(note.data)))
                     };
                     this.notes.push(noteData);
@@ -77,6 +75,12 @@ export default {
             editor.setID(this.notes[index].id);
             editor.setTitle(this.notes[index].title);
             editor.setContent(this.notes[index].content);
+        },
+        onNoteContextClick(e, index) {
+            e.stopPropagation();
+            ctxmenu.show([
+                { text: "Удалить", action: () => {
+                    webview.invoke('removeNote', this.notes[index].id).then(() => { this.updateNoteList(); }); } }], e.target);
         },
         onEditorSaveClick(e) {
             this.isReady = false;
@@ -203,5 +207,9 @@ input {
 
 span, div {
     user-select: none;
+}
+
+.ctxmenu {
+    border-radius: 4px;
 }
 </style>

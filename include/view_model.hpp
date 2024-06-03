@@ -14,6 +14,8 @@ namespace notes
 
         void saveNote(uint32_t ID, std::string noteName, std::string noteData);
 
+        void removeNote(uint32_t ID);
+
       private:
         libwebview::App* app;
         NoteStorage noteStorage;

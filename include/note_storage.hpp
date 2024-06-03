@@ -14,11 +14,12 @@ namespace notes
 
         void saveNoteToDB(Note const& note);
 
+        void removeNoteFromDB(uint32_t const ID);
+
       private:
         SQLite::Database database;
-        std::vector<Note> notes;
 
-        void loadNotesFromDB();
+        std::vector<Note> loadNotesFromDB() const;
         bool tryCreateNotesDB();
     };
 } // namespace notes

@@ -9,6 +9,7 @@ namespace notes
         app->bind("saveNote", [this](uint32_t ID, std::string noteName, std::string noteData) -> void {
             saveNote(ID, noteName, noteData);
         });
+        app->bind("removeNote", [this](uint32_t ID) -> void { removeNote(ID); });
     }
 
     std::string ViewModel::getNotes()
@@ -19,5 +20,10 @@ namespace notes
     void ViewModel::saveNote(uint32_t ID, std::string noteName, std::string noteData)
     {
         noteStorage.saveNoteToDB(Note(ID, noteName, noteData));
+    }
+
+    void ViewModel::removeNote(uint32_t ID)
+    {
+        noteStorage.removeNoteFromDB(ID);
     }
 } // namespace notes

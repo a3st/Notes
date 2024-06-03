@@ -9,13 +9,11 @@ namespace notes
         {
             throw std::runtime_error("An error occurred when adding a new table to the database");
         }
-
-        this->loadNotesFromDB();
     }
 
-    void NoteStorage::loadNotesFromDB()
+    std::vector<Note> NoteStorage::loadNotesFromDB() const
     {
-        notes.clear();
+        std::vector<Note> notes;
 
         std::string const dbSelectSQL("SELECT `id` ,`name`, `data` FROM `notes`");
 
@@ -28,6 +26,7 @@ namespace notes
 
             notes.emplace_back(noteID, noteName, noteData);
         }
+        return notes;
     }
 
     bool NoteStorage::tryCreateNotesDB()
@@ -66,38 +65,43 @@ namespace notes
             std::string const dbAddNoteSQL = std::format(
                 "INSERT INTO `notes` (`name`, `data`) VALUES ('{}', '{}') RETURNING id", note.noteName, note.noteData);
 
-            uint32_t const noteID = database.execAndGet(dbAddNoteSQL).getInt();
-
-            notes.emplace_back(noteID, note.noteName, note.noteData);
+            int32_t const result = database.tryExec(dbAddNoteSQL);
+            if (result != SQLite::OK)
+            {
+                throw std::runtime_error("An error occurred when adding a row to the database");
+            }
         }
         else
         {
             std::string const dbUpdateNoteSQL = std::format("UPDATE `notes` SET `name`='{}', `data`='{}' WHERE `id`={}",
                                                             note.noteName, note.noteData, note.noteID);
 
-            int32_t result = database.tryExec(dbUpdateNoteSQL);
+            int32_t const result = database.tryExec(dbUpdateNoteSQL);
             if (result != SQLite::OK)
             {
                 throw std::runtime_error("An error occurred when updating a row to the database");
             }
+        }
+    }
 
-            auto found = std::find_if(notes.begin(), notes.end(),
-                                      [&](auto const& element) { return note.noteID == element.noteID; });
-            if (found != notes.end())
-            {
-                found->noteName = note.noteName;
-                found->noteData = note.noteData;
-            }
+    void NoteStorage::removeNoteFromDB(uint32_t const ID)
+    {
+        std::string const dbDeleteSQL = std::format("DELETE FROM `notes` WHERE `id`={}", ID);
+
+        int32_t const result = database.tryExec(dbDeleteSQL);
+        if (result != SQLite::OK)
+        {
+            throw std::runtime_error("An error occurred when updating a row to the database");
         }
     }
 
     std::string NoteStorage::getNotesData() const
     {
         std::stringstream stream;
-
         stream << "{\"notes\":[";
+        
         bool isFirst = true;
-        for (auto const& note : notes)
+        for (auto const& note : this->loadNotesFromDB())
         {
             if (!isFirst)
             {

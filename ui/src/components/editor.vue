@@ -19,26 +19,12 @@
                             <object style="pointer-events: none;" data="images/eye.svg" width="20" height="20"></object>
                         </button>
 
-                        <button title="Экспорт" class="btn-icon circle" style="width: 36px; height: 36px;" @click="onExportClick($event)">
+                        <button id="export-btn" title="Экспорт" class="btn-icon circle" style="width: 36px; height: 36px;" @click="onExportClick($event)">
                             <object style="pointer-events: none;" data="images/file-export.svg" width="20" height="20"></object>
                         </button>
-
-                        <div v-if="isOpenExport" class="expand-inline-menu" style="background-color: rgb(245, 245, 220);">
-                            <button title="PDF" class="btn-icon circle" style="width: 36px; height: 36px;" @click="">
-                                <object style="pointer-events: none;" data="images/pdf.svg" width="20" height="20"></object>
-                            </button>
-
-                            <button title="DOCX" class="btn-icon circle" style="width: 36px; height: 36px;" @click="">
-                                <object style="pointer-events: none;" data="images/doc.svg" width="20" height="20"></object>
-                            </button>
-
-                            <button title="TXT" class="btn-icon circle" style="width: 36px; height: 36px;" @click="">
-                                <object style="pointer-events: none;" data="images/txt.svg" width="20" height="20"></object>
-                            </button>
-                        </div>
                     </div>
                     <div style="display: flex; flex-direction: row; margin-left: auto;">
-                        <button class="btn-text" @click="onSaveClick($event)" style="font-weight: bold;">Сохранить</button>
+                        <button v-show="this.title.length > 0" class="btn-text" @click="onSaveClick($event)" style="font-weight: bold;">Сохранить</button>
                         <button class="btn-text" @click="onCloseClick($event)" style="font-weight: bold;">Закрыть</button>
                     </div>
                 </div>
@@ -49,6 +35,7 @@
 
 <script>
 import { marked } from 'marked';
+import { ctxmenu } from 'ctxmenu';
 import $ from 'jquery';
 
 export default {
@@ -56,7 +43,6 @@ export default {
     data() {
         return {
             isOpenEditor: false,
-            isOpenExport: false,
             isPreview: false,
             content: "",
             title: "",
@@ -67,6 +53,9 @@ export default {
         previewText() {
             return marked(this.content);
         }
+    },
+    mounted() {
+        
     },
     methods: {
         onFocusInput(e) {
@@ -81,7 +70,6 @@ export default {
             this.title = "";
             this.content = "";
             this.isOpenEditor = false;
-            this.isOpenExport = false;
             this.isPreview = false;
             this.id = -1;
         },
@@ -90,7 +78,13 @@ export default {
             this.onCloseClick();
         },
         onExportClick(e) {
-            this.isOpenExport = !this.isOpenExport;
+            e.stopPropagation();
+            ctxmenu.show([
+                { text: "Экспорт" }, 
+                { text: ".TXT", action: () => alert("Hello World!") }, 
+                { text: ".PDF", action: () => alert("Hello World!") },
+                { text: ".DOCX", action: () => alert("Hello World!") },
+            ], e.target);
         },
         open(preview) {
             this.isOpenEditor = true;
