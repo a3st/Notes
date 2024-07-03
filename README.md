@@ -1,6 +1,6 @@
 ## Notes
 
-Markdown notes with Web-app UI.
+Minimalistic note editor in Markdown format.
 
 ![media-1](media/notes-1.png)
 ![media-2](media/notes-2.png)
