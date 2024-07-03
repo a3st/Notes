@@ -1,9 +1,11 @@
-### Notes
+## Notes
+
+Markdown notes with Web-app UI.
 
 ![media-1](media/notes-1.png)
 ![media-2](media/notes-2.png)
 
-### Build
+## Build
 
 The project is built using CMake. 
 Download all dependencies (thirdparty) using --recursive git.
@@ -13,7 +15,7 @@ Download all dependencies (thirdparty) using --recursive git.
 - C++23 Compiler
 - CMake 3.26.0
 
-### Thirdparties
+## Thirdparties
 
 - [base64pp](https://github.com/matheusgomes28/base64pp)
 - [libwebview](https://github.com/a3st/libwebview)
