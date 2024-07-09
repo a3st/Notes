@@ -1,14 +1,17 @@
 <template>
     <div class="wrapper-container">
-        <editor ref="editor" @save="onEditorSaveClick($event)"></editor>
+        <editor ref="editor" @save="onEditorSaveClick"></editor>
 
         <div v-if="isReady" class="notegr-container">
-            <note v-for="(note, index) in notes" 
-                v-bind:id="note.id" 
-                v-bind:title="note.title" 
-                v-bind:data="note.content" 
-                @note-click="onNoteClick($event, index)" 
-                @menu-click="onNoteMenuClick($event)">
+            <note
+                v-for="(note, index) in notes"
+                :key="note.id"
+                :id="note.id"
+                :title="note.title"
+                :data="note.content"
+                @note-click="onNoteClick($event, index)"
+                @menu-click="onNoteMenuClick"
+            >
             </note>
         </div>
 
@@ -20,47 +23,54 @@
 </template>
 
 <script>
-import $ from 'jquery';
+import $ from "jquery";
 
-import NoteComponent from '../components/note.vue';
-import EditorComponent from '../components/editor.vue';
+import NoteComponent from "../components/note.vue";
+import EditorComponent from "../components/editor.vue";
 
 export default {
     components: {
-        'note': NoteComponent,
-        'editor': EditorComponent
+        note: NoteComponent,
+        editor: EditorComponent,
     },
     data() {
         return {
             isReady: true,
-            notes: []
-        }
+            notes: [],
+        };
     },
     created() {
-        $(window).on('resize', e => { this.updateNoteGroupHeight(e.target.outerHeight); });
+        $(window).on("resize", (e) => {
+            this.updateNoteGroupHeight(e.target.outerHeight);
+        });
     },
     destroyed() {
-        $(window).off('resize');
+        $(window).off("resize");
     },
     mounted() {
         this.updateNoteList();
-        this.$nextTick(() => { this.updateNoteGroupHeight($(window).outerHeight()); });
+        this.$nextTick(() => {
+            this.updateNoteGroupHeight($(window).outerHeight());
+        });
     },
     methods: {
         updateNoteGroupHeight(windowHeight) {
-            $('.notegr-container').css('height', windowHeight - ($('.editor-container').height() + 80));
+            $(".notegr-container").css(
+                "height",
+                windowHeight - ($(".editor-container").height() + 80)
+            );
         },
         updateNoteList() {
             this.isReady = false;
 
             this.notes.splice(0, this.notes.length);
 
-            webview.invoke('getNotes').then(data => {
-                for(const note of Object.values(data.notes)) {
+            webview.invoke("getNotes").then((data) => {
+                for (const note of Object.values(data.notes)) {
                     const noteData = {
-                        'id': note.id,
-                        'title': note.name,
-                        'content': decodeURIComponent(escape(atob(note.data)))
+                        id: note.id,
+                        title: note.name,
+                        content: decodeURIComponent(escape(atob(note.data))),
                     };
                     this.notes.push(noteData);
                 }
@@ -70,12 +80,11 @@ export default {
         onNoteClick(e, index) {
             const editor = this.$refs.editor;
 
-            if(editor.isOpen()) {
+            if (editor.isOpen()) {
                 return;
             }
 
             editor.open(true);
-            
             editor.setID(this.notes[index].id);
             editor.setTitle(this.notes[index].title);
             editor.setContent(this.notes[index].content);
@@ -85,54 +94,54 @@ export default {
         },
         onEditorSaveClick(e) {
             this.updateNoteList();
-        }
-    }
-}
+        },
+    },
+};
 </script>
 
 <style>
 @font-face {
-    font-family: 'Roboto', sans-serif;
-    src: url('../fonts/Roboto-Regular.ttf') format('truetype');
+    font-family: "Roboto", sans-serif;
+    src: url("../fonts/Roboto-Regular.ttf") format("truetype");
     font-weight: 400;
     font-style: normal;
 }
 
 @font-face {
-    font-family: 'Roboto', sans-serif;
-    src: url('../fonts/Roboto-Bold.ttf') format('truetype');
+    font-family: "Roboto", sans-serif;
+    src: url("../fonts/Roboto-Bold.ttf") format("truetype");
     font-weight: bold;
     font-style: normal;
 }
 
 @font-face {
-    font-family: 'Roboto', sans-serif;
-    src: url('../fonts/Roboto-Medium.ttf') format('truetype');
+    font-family: "Roboto", sans-serif;
+    src: url("../fonts/Roboto-Medium.ttf") format("truetype");
     font-weight: 500;
     font-style: normal;
 }
 
 .loader {
-  width: 50px;
-  aspect-ratio: 1;
-  border-radius: 50%;
-  border: 8px solid;
-  border-color: #000 #0000;
-  animation: l1 1s infinite;
+    width: 50px;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    border: 8px solid;
+    border-color: #000 #0000;
+    animation: l1 1s infinite;
 }
 
 @keyframes l1 {
     to {
-        transform: rotate(.5turn)
+        transform: rotate(0.5turn);
     }
 }
 
 .notegr-container {
-    display: flex; 
+    display: flex;
     flex-direction: column;
-    gap: 20px; 
-    padding: 10px; 
-    margin-top: 10px; 
+    gap: 20px;
+    padding: 10px;
+    margin-top: 10px;
     overflow-y: auto;
     overflow-x: hidden;
 }
@@ -184,7 +193,7 @@ body {
     padding: 0;
     overflow-y: hidden;
     overflow-x: hidden;
-    font-family: 'Roboto', sans-serif;
+    font-family: "Roboto", sans-serif;
 }
 
 textarea {
@@ -203,7 +212,8 @@ input {
     width: 100%;
 }
 
-span, div {
+span,
+div {
     user-select: none;
 }
 

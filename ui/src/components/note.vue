@@ -1,51 +1,71 @@
 <template>
     <div class="note-container">
         <div class="note-header-container">
-            <span class="note-title" @mousedown="$emit('note-click', $event)">{{ title }}</span>
+            <span class="note-title" @mousedown="$emit('note-click', $event)">{{
+                title
+            }}</span>
 
-            <div style="display: flex; flex-direction: row; margin-left: auto;">
-                <button class="btn-icon" @click="onMenuClick($event)">
-                    <object style="pointer-events: none;" data="images/ellipsis.svg" width="16" height="16"></object>
+            <div style="display: flex; flex-direction: row; margin-left: auto">
+                <button class="btn-icon" @click="onMenuClick">
+                    <img
+                        :src="require('../images/ellipsis.svg')"
+                        width="16"
+                        height="16"
+                    />
                 </button>
             </div>
         </div>
 
-        <div class="note-body-container" v-html="description" @mousedown="$emit('note-click', $event)"></div>
+        <div
+            class="note-body-container"
+            v-html="description"
+            @mousedown="$emit('note-click', $event)"
+        ></div>
     </div>
 </template>
 
 <script>
-import {marked} from 'marked';
-import { ctxmenu } from 'ctxmenu';
+import { marked } from "marked";
+import { ctxmenu } from "ctxmenu";
 
 export default {
-    emits: ['note-click', 'menu-click'],
+    emits: ["note-click", "menu-click"],
     props: {
         id: Number,
         title: String,
-        data: String
+        data: String,
     },
     computed: {
         description() {
             return marked(this.data);
-        }
+        },
     },
     methods: {
         onMenuClick(e) {
             e.stopPropagation();
-            ctxmenu.show([
-                { text: "Удалить", action: () => {
-                    webview.invoke('removeNote', this.id).then(() => this.$emit('menu-click', e)); } }], e.target);
+            ctxmenu.show(
+                [
+                    {
+                        text: "Удалить",
+                        action: () => {
+                            webview
+                                .invoke("removeNote", this.id)
+                                .then(() => this.$emit("menu-click", e));
+                        },
+                    },
+                ],
+                e.target
+            );
         },
-    }
-}
+    },
+};
 </script>
 
 <style>
 .note-container {
     position: relative;
     border-top: 5px solid rgb(227 221 192);
-    display: flex; 
+    display: flex;
     flex-direction: column;
     background-color: rgb(255, 247, 209);
     min-height: 70px;
@@ -64,7 +84,7 @@ export default {
 }
 
 .note-container:hover {
-    background-color: rgb(238, 231, 195)
+    background-color: rgb(238, 231, 195);
 }
 
 .note-header-container {
@@ -133,7 +153,8 @@ export default {
     font-weight: normal;
 }
 
-.note-body-container ol, ul {
+.note-body-container ol,
+ul {
     margin: 1px 0px 0px 0px;
 }
 

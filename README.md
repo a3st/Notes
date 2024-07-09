@@ -12,8 +12,8 @@ Download all dependencies (thirdparty) using --recursive git.
 
 ### Requirements
 
-- C++23 Compiler
-- CMake 3.26.0
+- Visual Studio 2022 or Clang-18
+- CMake 3.25.1+
 
 ## Thirdparties
 
