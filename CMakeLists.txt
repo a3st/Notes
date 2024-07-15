@@ -32,18 +32,6 @@ add_executable(Notes
     src/note_storage.cpp
     src/note.cpp)
 
-if(WIN32)
-set_target_properties(Notes
-    PROPERTIES
-        LINK_FLAGS_DEBUG "/SUBSYSTEM:CONSOLE"
-        LINK_FLAGS_RELEASE "/SUBSYSTEM:windows /ENTRY:mainCRTStartup"
-        LINK_FLAGS_RELWITHDEBINFO "/SUBSYSTEM:windows /ENTRY:mainCRTStartup"
-        LINK_FLAGS_MINSIZEREL "/SUBSYSTEM:windows /ENTRY:mainCRTStartup"
-    )
-
-target_sources(Notes PRIVATE app.rc)
-endif()
-
 target_include_directories(Notes PRIVATE 
     ${PROJECT_SOURCE_DIR}/src
     ${PROJECT_SOURCE_DIR}/include)
@@ -54,12 +42,18 @@ target_link_libraries(Notes PRIVATE
     base64pp
     SQLiteCpp
     simdjson
-    libwebview_edge)
+    libwebview)
 
 if(WIN32)
-target_link_libraries(Notes PRIVATE libwebview_edge)
-elseif(UNIX)
-target_link_libraries(Notes PRIVATE libwebview_webkit)
+set_target_properties(Notes
+    PROPERTIES
+        LINK_FLAGS_DEBUG "/SUBSYSTEM:CONSOLE"
+        LINK_FLAGS_RELEASE "/SUBSYSTEM:windows /ENTRY:mainCRTStartup"
+        LINK_FLAGS_RELWITHDEBINFO "/SUBSYSTEM:windows /ENTRY:mainCRTStartup"
+        LINK_FLAGS_MINSIZEREL "/SUBSYSTEM:windows /ENTRY:mainCRTStartup"
+    )
+
+target_sources(Notes PRIVATE app.rc)
 endif()
 
 add_custom_command(

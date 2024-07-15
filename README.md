@@ -1,4 +1,4 @@
-## Notes
+# Notes
 
 Minimalistic note editor in Markdown format.
 
@@ -12,7 +12,7 @@ Download all dependencies (thirdparty) using --recursive git.
 
 ### Requirements
 
-- Visual Studio 2022 or Clang-18
+- Visual Studio /or Build Tools 2022 or Clang 18
 - CMake 3.25.1+
 
 ## Thirdparties
