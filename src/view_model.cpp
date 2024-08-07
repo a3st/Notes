@@ -1,3 +1,5 @@
+// Copyright © 2022-2024 Dmitriy Lukovenko. All rights reserved.
+
 #include "view_model.hpp"
 #include "precompiled.hpp"
 

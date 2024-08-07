@@ -1,3 +1,5 @@
+// Copyright © 2022-2024 Dmitriy Lukovenko. All rights reserved.
+
 #pragma once
 
 namespace notes
@@ -9,8 +11,8 @@ namespace notes
         Note(uint32_t const noteID, std::string_view const noteName, std::string_view const noteData);
 
         /*!
-          @brief Present note in JSON format
-          @return JSON formatted string
+          \brief Presents note in JSON format
+          \return JSON formatted string
         */
         std::string dump() const;
 

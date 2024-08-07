@@ -1,3 +1,5 @@
+// Copyright © 2022-2024 Dmitriy Lukovenko. All rights reserved.
+
 #include "exporters/txt.hpp"
 #include "precompiled.hpp"
 

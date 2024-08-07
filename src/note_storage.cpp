@@ -1,3 +1,5 @@
+// Copyright © 2022-2024 Dmitriy Lukovenko. All rights reserved.
+
 #include "note_storage.hpp"
 #include "precompiled.hpp"
 #include <base64pp/base64pp.h>
