@@ -40,6 +40,18 @@ add_executable(Notes
     src/note_storage.cpp
     src/note.cpp)
 
+target_include_directories(Notes PRIVATE 
+    ${PROJECT_SOURCE_DIR}/src
+    ${PROJECT_SOURCE_DIR}/include)
+
+target_precompile_headers(Notes PRIVATE ${PROJECT_SOURCE_DIR}/include/precompiled.hpp)
+    
+target_link_libraries(Notes PRIVATE
+    base64pp
+    SQLiteCpp
+    simdjson
+    libwebview)
+
 if(WIN32)
     set_target_properties(Notes
         PROPERTIES
